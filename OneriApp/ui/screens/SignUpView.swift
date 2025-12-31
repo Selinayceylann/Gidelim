@@ -228,7 +228,7 @@ private extension SignUpView {
                 let firebaseUser = await viewModel.signUp(email: email, password: password)
                 
                 if let firebaseUser = firebaseUser {
-                    print("✅ Firebase Auth user created: \(firebaseUser.uid)")
+                    print("Firebase Auth user created: \(firebaseUser.uid)")
                     
                     let nameParts = fullName.split(separator: " ", maxSplits: 1)
                     let firstName = nameParts.first.map(String.init) ?? ""
@@ -247,17 +247,17 @@ private extension SignUpView {
                     let saveSuccess = await viewModel.saveUserToFirestore(user: user)
                     
                     if saveSuccess {
-                        print("✅ User saved to Firestore")
+                        print("User saved to Firestore")
                         navigateToHome = true
                     } else {
                         alertMessage = viewModel.errorMessage ?? "Kullanıcı kaydedilemedi"
                         showAlert = true
-                        print("❌ Failed to save user: \(viewModel.errorMessage ?? "Unknown error")")
+                        print("Failed to save user: \(viewModel.errorMessage ?? "Unknown error")")
                     }
                 } else {
                     alertMessage = viewModel.errorMessage ?? "Kayıt başarısız"
                     showAlert = true
-                    print("❌ Sign up failed: \(viewModel.errorMessage ?? "Unknown error")")
+                    print("Sign up failed: \(viewModel.errorMessage ?? "Unknown error")")
                 }
             }
         }) {

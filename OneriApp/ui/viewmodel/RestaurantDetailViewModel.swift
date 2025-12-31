@@ -43,17 +43,17 @@ class RestaurantDetailViewModel: ObservableObject {
                 self.currentUser = userData
             } catch {
                 self.errorMessage = "Kullanıcı yüklenemedi: \(error.localizedDescription)"
-                print("❌ Error loading user: \(error)")
+                print("Error loading user: \(error)")
             }
         } else {
             self.currentUser = nil
-            print("⚠️ No Firebase user found")
+            print("No Firebase user found")
         }
     }
     
     func togglePlannedPlace(restaurantId: String) async {
         guard let user = currentUser, let userId = user.id else {
-            print("❌ No current user found")
+            print("No current user found")
             errorMessage = "Lütfen giriş yapın"
             return
         }
@@ -63,12 +63,12 @@ class RestaurantDetailViewModel: ObservableObject {
         
         do {
             try await repository.togglePlannedPlace(userId: userId, restaurantId: restaurantId)
-            print("✅ Planned place toggled successfully")
+            print("Planned place toggled successfully")
             
             await getCurrentUser()
         } catch {
             errorMessage = "İşlem başarısız: \(error.localizedDescription)"
-            print("❌ Error toggling planned place: \(error)")
+            print("Error toggling planned place: \(error)")
         }
         
         isLoading = false

@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  OneriApp
+//
+//  Created by selinay ceylan on 11.10.2025.
+//
+
 import SwiftUI
 
 struct SearchView: View {
