@@ -11,6 +11,11 @@ import FirebaseCore
 @main
 struct OneriAppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
+    @StateObject private var container = AppContainer(
+            repository: OneriAppRepository(),
+            authService: FirebaseAuthService()
+        )
 
     init() {
         NavigationBarStyle.setupNavigationBar()

@@ -5,76 +5,83 @@
 //  Created by selinay ceylan on 7.11.2025.
 //
 
-
 import Foundation
-import FirebaseAuth
+import SwiftUI
 
 @MainActor
-class RestaurantDetailViewModel: ObservableObject {
-    private let repository = OneriAppRepository()
-    private let authService = FirebaseAuthService()
-    
-    @Published var restaurants: [Restaurant] = []
-    @Published var currentUser: User?
-    @Published var isLoading = false
+final class RestaurantDetailViewModel: ObservableObject {
+
+    // MARK: - Dependencies
+    private let repository: OneriAppRepositoryProtocol
+    private let authService: FirebaseAuthServiceProtocol
+
+    // MARK: - Published State
+    @Published private(set) var restaurants: [Restaurant] = []
+    @Published private(set) var currentUser: User?
+    @Published private(set) var isLoading: Bool = false
     @Published var errorMessage: String?
-    
+
+    // MARK: - Init
+    init(
+        repository: OneriAppRepositoryProtocol,
+        authService: FirebaseAuthServiceProtocol
+    ) {
+        self.repository = repository
+        self.authService = authService
+    }
+
+    // MARK: - Public Functions
+
     func loadRestaurants() async {
-        await MainActor.run { isLoading = true }
-        
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
         do {
-            let fetchedRestaurants = try await repository.loadRestaurants()
-            await MainActor.run {
-                self.restaurants = fetchedRestaurants
-                self.isLoading = false
-            }
+            restaurants = try await repository.loadRestaurants()
         } catch {
-            await MainActor.run {
-                self.errorMessage = "Restoranlar yüklenirken hata oluştu: \(error.localizedDescription)"
-                self.isLoading = false
-            }
+            errorMessage = "Restoranlar yüklenirken hata oluştu"
         }
     }
-    
+
     func getCurrentUser() async {
-        if let firebaseUser = Auth.auth().currentUser {
-            do {
-                let userData = try await repository.loadUser(userId: firebaseUser.uid)
-                self.currentUser = userData
-            } catch {
-                self.errorMessage = "Kullanıcı yüklenemedi: \(error.localizedDescription)"
-                print("Error loading user: \(error)")
-            }
-        } else {
-            self.currentUser = nil
-            print("No Firebase user found")
+        errorMessage = nil
+
+        guard let authUser = authService.getCurrentUser() else {
+            currentUser = nil
+            return
+        }
+
+        do {
+            currentUser = try await repository.loadUser(userId: authUser.uid)
+        } catch {
+            errorMessage = "Kullanıcı yüklenemedi"
         }
     }
-    
+
     func togglePlannedPlace(restaurantId: String) async {
-        guard let user = currentUser, let userId = user.id else {
-            print("No current user found")
+        errorMessage = nil
+
+        guard let userId = currentUser?.id else {
             errorMessage = "Lütfen giriş yapın"
             return
         }
-        
+
         isLoading = true
-        errorMessage = nil
-        
+        defer { isLoading = false }
+
         do {
-            try await repository.togglePlannedPlace(userId: userId, restaurantId: restaurantId)
-            print("Planned place toggled successfully")
-            
+            try await repository.togglePlannedPlace(
+                userId: userId,
+                restaurantId: restaurantId
+            )
             await getCurrentUser()
         } catch {
-            errorMessage = "İşlem başarısız: \(error.localizedDescription)"
-            print("Error toggling planned place: \(error)")
+            errorMessage = "İşlem başarısız"
         }
-        
-        isLoading = false
     }
-    
+
     func isFavorite(restaurantId: String) -> Bool {
-        return currentUser?.plannedPlaces?.contains(restaurantId) ?? false
+        currentUser?.plannedPlaces?.contains(restaurantId) ?? false
     }
 }

@@ -6,59 +6,56 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct RestaurantDetailView: View {
+
     enum Tab { case about, menu, comments }
+
     @State private var selectedTab: Tab = .about
-    @StateObject var viewModel = RestaurantDetailViewModel()
+    @StateObject var viewModel: RestaurantDetailViewModel
     @Environment(\.dismiss) private var dismiss
-    
+
     let restaurant: Restaurant
-    @State private var isFavorite = false
     @State private var showCommentSheet = false
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 headerView
-                
                 hashtagSection
-                
-                HStack(spacing: 16) {
-                    TabButton(title: "Hakkında", selected: selectedTab == .about) { selectedTab = .about }
-                    TabButton(title: "Menü", selected: selectedTab == .menu) { selectedTab = .menu }
-                    TabButton(title: "Yorumlar", selected: selectedTab == .comments) { selectedTab = .comments }
-                }
-                .padding(.horizontal)
-                
+                tabButtons
+
                 switch selectedTab {
-                case .about: aboutView
-                case .menu: menuView
-                case .comments: commentsView
+                case .about:
+                    aboutView
+                case .menu:
+                    menuView
+                case .comments:
+                    commentsView
                 }
             }
             .padding(.vertical)
         }
         .task {
-            await viewModel.loadRestaurants()
+            await viewModel.getCurrentUser()
         }
         .overlay {
             if viewModel.isLoading {
                 ProgressView("Yükleniyor...")
             }
         }
-        .background(Color(.systemGroupedBackground))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
         .navigationTitle("Gidelim")
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { dismiss() }) {
-                    HStack(spacing: 4) {
+                Button {
+                    dismiss()
+                } label: {
+                    HStack {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.white)
                         Text("Geri")
-                            .foregroundColor(.white)
                     }
                 }
             }
@@ -68,6 +65,34 @@ struct RestaurantDetailView: View {
         }
     }
 }
+
+#if DEBUG
+let sampleRestaurant = Restaurant(
+    id: "1",
+    name: "Preview Restoran",
+    district: "Kadıköy",
+    fullAddress: "Kadıköy / İstanbul",
+    phoneNumber: "0212 000 00 00",
+    openingHours: "09:00 - 22:00",
+    description: "Preview açıklaması",
+    imageURL: nil,
+    reviews: [],
+    hasWifi: true,
+    acceptsCreditCard: true,
+    hasValetParking: false,
+    hasKidsMenu: true,
+    smokingAllowed: false,
+    petFriendly: true,
+    liveMusic: false,
+    sportsBroadcast: false,
+    hasAirConditioning: true,
+    wheelchairAccessible: true,
+    features: ["WiFi", "Vegan"],
+    menu: []
+)
+#endif
+
+
 
 private extension RestaurantDetailView {
     var hashtagSection: some View {
@@ -100,84 +125,50 @@ private extension RestaurantDetailView {
 }
 
 private extension RestaurantDetailView {
+
     var headerView: some View {
         ZStack(alignment: .topTrailing) {
-            ZStack(alignment: .bottomLeading) {
-                AsyncImage(url: URL(string: restaurant.imageURL ?? "")) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(height: 250)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 250)
-                            .clipped()
-                    case .failure:
-                        Image(systemName: "photo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 250)
-                            .foregroundColor(.gray)
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
-                .cornerRadius(12)
-                .shadow(radius: 5)
-                .padding(.horizontal)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(restaurant.name ?? "")
-                        .bold()
-                        .foregroundColor(.white)
-                        .font(.title2)
-                    
-                    HStack(spacing: 8) {
-                        Image(systemName: "star.fill")
-                            .foregroundColor(.yellow)
-                        Text(String(restaurant.rating ?? 0.0))
-                            .bold()
-                            .foregroundColor(.white)
-                            .font(.callout)
-                            .padding(.leading, -4)
-                        Text("(\(restaurant.reviews?.count ?? 0))")
-                            .bold()
-                            .foregroundColor(.gray)
-                            .font(.callout)
-                            .padding(.leading, -4)
-                        Image(systemName: "mappin")
-                            .foregroundColor(.white)
-                        Text(restaurant.district ?? "")
-                            .bold()
-                            .foregroundColor(.white)
-                            .font(.callout)
-                            .padding(.leading, -4)
-                    }
-                }
-                .padding(.all, 12)
-                .background(
-                    Color.black.opacity(0.5)
-                        .cornerRadius(8)
-                )
-                .padding(.leading, 24)
-                .padding(.bottom, 8)
+
+            AsyncImage(url: URL(string: restaurant.imageURL ?? "")) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                ProgressView()
             }
-            
-            Button(action: { isFavorite.toggle() }) {
-                Image(systemName: isFavorite ? "heart.fill" : "heart")
+            .frame(height: 250)
+            .clipped()
+            .cornerRadius(12)
+            .padding(.horizontal)
+
+            Button {
+                Task {
+                    guard let restaurantId = restaurant.id else { return }
+                    await viewModel.togglePlannedPlace(restaurantId: restaurantId)
+                }
+            } label: {
+                Image(systemName: heartIconName)
                     .font(.system(size: 24))
-                    .foregroundColor(isFavorite ? AppColor.mainColor : .white)
+                    .foregroundColor(.white)
                     .padding(12)
                     .background(Color.black.opacity(0.3))
                     .clipShape(Circle())
-                    .padding(.trailing, 28)
-                    .padding(.top, 12)
             }
+            .padding()
         }
     }
+
+    var heartIconName: String {
+        guard let restaurantId = restaurant.id else {
+            return "heart"
+        }
+        return viewModel.isFavorite(restaurantId: restaurantId)
+            ? "heart.fill"
+            : "heart"
+    }
 }
+
+
 
 private extension RestaurantDetailView {
     var aboutView: some View {
@@ -201,16 +192,16 @@ private extension RestaurantDetailView {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Özellikler").bold().font(.headline)
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                        FeatureRow(icon: "wifi", text: "Ücretsiz Wi-Fi", available: restaurant.hasWifi!)
-                        FeatureRow(icon: "creditcard", text: "Kredi Kartı", available: restaurant.acceptsCreditCard!)
-                        FeatureRow(icon: "car.fill", text: "Vale Park", available: restaurant.hasValetParking!)
-                        FeatureRow(icon: "figure.and.child.holdinghands", text: "Çocuk Menüsü", available: restaurant.hasKidsMenu!)
-                        FeatureRow(icon: "smoke", text: "Sigara İçilebilir", available: restaurant.smokingAllowed!)
-                        FeatureRow(icon: "pawprint.fill", text: "Evcil Hayvan", available: restaurant.petFriendly!)
-                        FeatureRow(icon: "music.note", text: "Canlı Müzik", available: restaurant.liveMusic!)
-                        FeatureRow(icon: "tv", text: "Spor Yayını", available: restaurant.sportsBroadcast!)
-                        FeatureRow(icon: "wind", text: "Klima", available: restaurant.hasAirConditioning!)
-                        FeatureRow(icon: "figure.roll", text: "Engelli Erişimi", available: restaurant.wheelchairAccessible!)
+                        FeatureRow(icon: "wifi", text: "Ücretsiz Wi-Fi", available: restaurant.hasWifi ?? false)
+                        FeatureRow(icon: "creditcard", text: "Kredi Kartı", available: restaurant.acceptsCreditCard ?? false)
+                        FeatureRow(icon: "car.fill", text: "Vale Park", available: restaurant.hasValetParking ?? false)
+                        FeatureRow(icon: "figure.and.child.holdinghands", text: "Çocuk Menüsü", available: restaurant.hasKidsMenu ?? false)
+                        FeatureRow(icon: "smoke", text: "Sigara İçilebilir", available: restaurant.smokingAllowed ?? false)
+                        FeatureRow(icon: "pawprint.fill", text: "Evcil Hayvan", available: restaurant.petFriendly! ?? false)
+                        FeatureRow(icon: "music.note", text: "Canlı Müzik", available: restaurant.liveMusic ?? false)
+                        FeatureRow(icon: "tv", text: "Spor Yayını", available: restaurant.sportsBroadcast ?? false)
+                        FeatureRow(icon: "wind", text: "Klima", available: restaurant.hasAirConditioning ?? false)
+                        FeatureRow(icon: "figure.roll", text: "Engelli Erişimi", available: restaurant.wheelchairAccessible! ?? false)
                     }
                 }
             }
@@ -254,6 +245,25 @@ private extension RestaurantDetailView {
 }
 
 private extension RestaurantDetailView {
+
+    var tabButtons: some View {
+        HStack {
+            TabButton(title: "Hakkında", selected: selectedTab == .about) {
+                selectedTab = .about
+            }
+            TabButton(title: "Menü", selected: selectedTab == .menu) {
+                selectedTab = .menu
+            }
+            TabButton(title: "Yorumlar", selected: selectedTab == .comments) {
+                selectedTab = .comments
+            }
+        }
+        .padding(.horizontal)
+    }
+}
+
+
+private extension RestaurantDetailView {
     var commentsView: some View {
         VStack(spacing: 16) {
             Button(action: {
@@ -278,16 +288,16 @@ private extension RestaurantDetailView {
                     ForEach(reviews, id: \.id) { item in
                         HStack(spacing: 8) {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(item.userName!)
+                                Text(item.userName ?? "Anonim")
                                     .bold()
-                                Text(item.comment!)
+                                Text(item.comment ?? "")
                                     .font(.callout)
                             }
                             Spacer()
                             VStack(spacing: 4) {
                                 Image(systemName: "star.fill")
                                     .foregroundColor(AppColor.mainColor)
-                                Text(String(format: "%.1f", item.rating!))
+                                Text(String(format: "%.1f", item.rating ?? 0))
                                     .font(.caption)
                                     .bold()
                             }
@@ -478,44 +488,15 @@ struct TabButton: View {
 }
 
 #Preview {
-    let sampleRestaurant = Restaurant(
-        id: "1",
-        name: "Güzel Mekan",
-        district: "Kadıköy",
-        fullAddress: "Moda Caddesi No:12, İstanbul",
-        phoneNumber: "0212 123 45 67",
-        openingHours: "09:00 - 23:00",
-        description: "Deniz manzaralı, kahvaltı ve akşam yemeği için ideal bir mekan.",
-        imageURL: "https://example.com/sample-image.jpg",
-        category: "Kafe",
-        rating: 4.5,
-        reviews: [
-            Review(id: "1", userName: "Selin", comment: "Harika bir yer!", rating: 5.0,  date: Date())
-        ],
-        popularityScore: 95,
-        hasWifi: true,
-        acceptsCreditCard: true,
-        hasValetParking: true,
-        hasKidsMenu: false,
-        smokingAllowed: false,
-        petFriendly: true,
-        liveMusic: true,
-        sportsBroadcast: false,
-        hasAirConditioning: true,
-        wheelchairAccessible: true,
-        latitude: 29.04,
-        longitude: 42.01,
-        features: ["Romantik", "Deniz Manzaralı", "Toplantı", "Fotoğraf Çekilmelik"],
-        menu: [
-            Menu(id: "1", name: "Kahve", category: "İçecek", image: "https://example.com/coffee.jpg"),
-            Menu(id: "2", name: "Tost", category: "Atıştırmalık", image: "https://example.com/toast.jpg")
-        ]
-        
-        
+    RestaurantDetailView(
+        viewModel: RestaurantDetailViewModel(
+            repository: PreviewRepository(),
+            authService: PreviewAuthService()
+        ),
+        restaurant: sampleRestaurant
     )
-    
-    RestaurantDetailView(restaurant: sampleRestaurant)
 }
+
 
 
 struct FeatureRow: View {
@@ -542,3 +523,4 @@ struct FeatureRow: View {
         .opacity(available ? 1.0 : 0.6)
     }
 }
+

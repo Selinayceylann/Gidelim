@@ -14,6 +14,7 @@ struct MapView: View {
         span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
     )
     
+    @EnvironmentObject var container: AppContainer
     @StateObject private var viewModel = MapViewModel()
     @State private var showNearbySheet = false
     
@@ -87,7 +88,12 @@ private extension MapView {
     }
     
     func restaurantAnnotation(for place: Restaurant) -> some View {
-        NavigationLink(destination: RestaurantDetailView(restaurant: place)) {
+        NavigationLink(
+            destination: RestaurantDetailView(
+                viewModel: container.makeRestaurantDetailViewModel(),
+                restaurant: place
+            )
+        ) {
             VStack(spacing: 4) {
                 Circle()
                     .fill(AppColor.mainColor)
@@ -106,6 +112,8 @@ private extension MapView {
         }
         .buttonStyle(PlainButtonStyle())
     }
+
+
 }
 
 // MARK: - Overlay Sections
@@ -241,6 +249,7 @@ private extension MapView {
 
 // MARK: - Bottom Sheet View
 struct BottomSheetView: View {
+    @EnvironmentObject var container: AppContainer
     let restaurants: [Restaurant]
     
     var body: some View {
@@ -293,7 +302,10 @@ private extension BottomSheetView {
         ScrollView {
             LazyVStack(spacing: 12) {
                 ForEach(restaurants, id: \.id) { restaurant in
-                    NavigationLink(destination: RestaurantDetailView(restaurant: restaurant)) {
+                    NavigationLink(destination: RestaurantDetailView(
+                        viewModel: container.makeRestaurantDetailViewModel(),
+                        restaurant: restaurant
+                    )) {
                         NearbyRestaurantCard(restaurant: restaurant)
                     }
                     .buttonStyle(PlainButtonStyle())

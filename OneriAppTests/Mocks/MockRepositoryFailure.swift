@@ -6,6 +6,7 @@
 //
 
 import Foundation
+@testable import OneriApp
 
 final class MockRepositoryFailure: OneriAppRepositoryProtocol {
     func loadRestaurants() async throws -> [Restaurant] {

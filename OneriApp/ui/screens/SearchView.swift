@@ -12,6 +12,7 @@ struct SearchView: View {
     @State private var searchText = ""
     @FocusState private var isSearchFieldFocused: Bool
     @State private var showFilterSheet = false
+    @EnvironmentObject private var container: AppContainer
     
     @State private var selectedDistrict: String = "Tümü"
     @State private var selectedCategory: String = "Tümü"
@@ -321,10 +322,15 @@ private extension SearchView {
                 
                 LazyVStack(spacing: 12) {
                     ForEach(filteredResults) { restaurant in
-                        NavigationLink(destination: RestaurantDetailView(restaurant: restaurant)) {
+                        NavigationLink {
+                            RestaurantDetailView(
+                                viewModel: container.makeRestaurantDetailViewModel(),
+                                restaurant: restaurant
+                            )
+                        } label: {
                             SearchResultCard(restaurant: restaurant)
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal)

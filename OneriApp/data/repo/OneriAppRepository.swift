@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-class OneriAppRepository : OneriAppRepositoryProtocol {
+final class OneriAppRepository : OneriAppRepositoryProtocol {
     private let db = Firestore.firestore()
     
     

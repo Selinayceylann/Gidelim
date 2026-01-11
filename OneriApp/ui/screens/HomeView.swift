@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     
     @StateObject private var viewModel: HomeViewModel
+    @EnvironmentObject var container: AppContainer
 
         init(viewModel: HomeViewModel) {
             _viewModel = StateObject(wrappedValue: viewModel)
@@ -221,7 +222,10 @@ private extension HomeView {
     
     var restaurantsContent: some View {
         ForEach(filteredRestaurants) { restaurant in
-            NavigationLink(destination: RestaurantDetailView(restaurant: restaurant)) {
+            NavigationLink(destination: RestaurantDetailView(
+                viewModel: container.makeRestaurantDetailViewModel(),
+                restaurant: restaurant
+            )) {
                 DistrictRestaurantCardView(
                     restaurant: restaurant,
                     isLoggedIn: viewModel.isLoggedIn
@@ -230,8 +234,10 @@ private extension HomeView {
                 .padding(.bottom, 8)
             }
             .buttonStyle(PlainButtonStyle())
+
         }
     }
+        
 }
 
 // MARK: - Reusable Components
@@ -253,7 +259,12 @@ private extension HomeView {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(alignment: .top, spacing: 16) {
                 ForEach(restaurants) { restaurant in
-                    NavigationLink(destination: RestaurantDetailView(restaurant: restaurant)) {
+                    NavigationLink {
+                        RestaurantDetailView(
+                            viewModel: container.makeRestaurantDetailViewModel(),
+                            restaurant: restaurant
+                        )
+                    } label: {
                         RestaurantCardView(restaurant: restaurant)
                     }
                 }
@@ -264,11 +275,17 @@ private extension HomeView {
 }
 
 #Preview {
-    HomeView(
-        viewModel: HomeViewModel(
-            repository: MockRepositorySuccess(),
-            authService: MockAuthService()
-        )
+    let container = AppContainer(
+        repository: PreviewRepository(),
+        authService: PreviewAuthService()
     )
+    let homeVM = container.makeHomeViewModel()
+
+    HomeView(viewModel: homeVM)
+        .environmentObject(homeVM)     // DistrictRestaurantCardView için
+        .environmentObject(container)  // DI için
 }
+
+
+
 

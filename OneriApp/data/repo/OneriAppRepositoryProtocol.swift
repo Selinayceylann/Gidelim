@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
- protocol OneriAppRepositoryProtocol {
+protocol OneriAppRepositoryProtocol {
     func loadUser(userId: String) async throws -> User
     func loadRestaurants() async throws -> [Restaurant]
     func togglePlannedPlace(userId: String, restaurantId: String) async throws

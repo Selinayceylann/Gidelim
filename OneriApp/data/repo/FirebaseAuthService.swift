@@ -7,6 +7,11 @@
 
 import FirebaseAuth
 
+struct AuthUser {
+    let uid: String
+    let email: String?
+}
+
 final class FirebaseAuthService: FirebaseAuthServiceProtocol {
 
     func signUp(email: String, password: String) async throws -> AuthUser {
@@ -29,7 +34,7 @@ final class FirebaseAuthService: FirebaseAuthServiceProtocol {
         )
     }
 
-    func signOut() throws {
+    func signOut() async throws {
         try Auth.auth().signOut()
     }
 
