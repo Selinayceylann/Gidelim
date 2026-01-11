@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct RestaurantCardView: View {
-    private let viewModel = HomeViewModel()
     let restaurant: Restaurant
     
     var body: some View {

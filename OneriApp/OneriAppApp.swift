@@ -25,7 +25,12 @@ struct OneriAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            HomeView(
+                    viewModel: HomeViewModel(
+                        repository: OneriAppRepository(),
+                        authService: FirebaseAuthService()
+                    )
+                )
         }
     }
 }

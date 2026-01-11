@@ -503,13 +503,15 @@ struct TabButton: View {
         sportsBroadcast: false,
         hasAirConditioning: true,
         wheelchairAccessible: true,
+        latitude: 29.04,
+        longitude: 42.01,
+        features: ["Romantik", "Deniz Manzaralı", "Toplantı", "Fotoğraf Çekilmelik"],
         menu: [
             Menu(id: "1", name: "Kahve", category: "İçecek", image: "https://example.com/coffee.jpg"),
             Menu(id: "2", name: "Tost", category: "Atıştırmalık", image: "https://example.com/toast.jpg")
-        ],
-        latitude: 29.04,
-        longitude: 42.01,
-        features: ["Romantik", "Deniz Manzaralı", "Toplantı", "Fotoğraf Çekilmelik"]
+        ]
+        
+        
     )
     
     RestaurantDetailView(restaurant: sampleRestaurant)

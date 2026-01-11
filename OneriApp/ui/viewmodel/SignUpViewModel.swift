@@ -6,49 +6,40 @@
 //
 
 import Foundation
-import FirebaseAuth
 
 @MainActor
-class SignUpViewModel: ObservableObject {
-    private let authRepository = FirebaseAuthService()
-    private let repository = OneriAppRepository()
-    
+final class SignUpViewModel: ObservableObject {
+
+    private let authRepository: FirebaseAuthServiceProtocol
+    private let repository: OneriAppRepositoryProtocol
+
     @Published var isLoading = false
     @Published var errorMessage: String?
-    
-    func signUp(email: String, password: String) async -> FirebaseAuth.User? {
+
+    init(
+        authRepository: FirebaseAuthServiceProtocol = FirebaseAuthService(),
+        repository: OneriAppRepositoryProtocol = OneriAppRepository()
+    ) {
+        self.authRepository = authRepository
+        self.repository = repository
+    }
+
+    func signUp(email: String, password: String) async -> AuthUser? {
         isLoading = true
         errorMessage = nil
-        
+
         do {
-            let firebaseUser = try await authRepository.signUp(email: email, password: password)
-            print("Firebase Auth user created: \(firebaseUser.uid)")
+            let user = try await authRepository.signUp(email: email, password: password)
             isLoading = false
-            return firebaseUser
+            return user
         } catch {
             errorMessage = error.localizedDescription
-            print("SignUp error: \(error.localizedDescription)")
             isLoading = false
             return nil
         }
     }
-    
+
     func saveUserToFirestore(user: User) async -> Bool {
-        errorMessage = nil
-        
-        guard let userId = user.id else {
-            errorMessage = "Kullanıcı ID'si bulunamadı"
-            return false
-        }
-        
-        do {
-            try await repository.saveUserToFirestore(user: user)
-            print("User saved to Firestore with ID: \(userId)")
-            return true
-        } catch {
-            errorMessage = error.localizedDescription
-            print("Firestore save error: \(error.localizedDescription)")
-            return false
-        }
+        await repository.saveUser(user)
     }
 }

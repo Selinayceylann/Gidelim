@@ -39,7 +39,12 @@ struct SignInView: View {
                 }
             }
             .fullScreenCover(isPresented: $navigateToHome) {
-                HomeView()
+                HomeView(
+                        viewModel: HomeViewModel(
+                            repository: OneriAppRepository(),
+                            authService: FirebaseAuthService()
+                        )
+                    )
             }
             .alert(item: $viewModel.errorMessage) { error in
                 Alert(

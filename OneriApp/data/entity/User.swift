@@ -11,12 +11,12 @@ struct User: Identifiable, Codable {
     var id: String? 
     var firstName: String?
     var lastName: String?
-    var email: String
+    var email: String?
     var comments: [Review]?
     var plannedPlaces: [String]?
     var historySearch: [String]?
     
-    init(id: String? = nil, firstName: String? = nil, lastName: String? = nil, email: String, comments: [Review]? = nil, plannedPlaces: [String]? = nil, historySearch: [String]? = nil) {
+    init(id: String? = nil, firstName: String? = nil, lastName: String? = nil, email: String? = nil, comments: [Review]? = nil, plannedPlaces: [String]? = nil, historySearch: [String]? = nil) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName

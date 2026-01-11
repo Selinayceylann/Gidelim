@@ -18,24 +18,25 @@ struct SignUpView: View {
     @State private var navigateToHome = false
     @State private var showAlert = false
     @State private var alertMessage = ""
+
     @Environment(\.dismiss) private var dismiss
-    @StateObject var viewModel = SignUpViewModel()
-    
+    @StateObject private var viewModel = SignUpViewModel()
+
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
-            
+
             ScrollView {
                 VStack(spacing: 24) {
                     Spacer(minLength: 40)
-                    
+
                     headerSection
                     registerForm
                     termsSection
                     registerButton
                     loginLink
-                    
+
                     Spacer(minLength: 40)
                 }
                 .padding(.horizontal, 24)
@@ -45,13 +46,14 @@ struct SignUpView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { dismiss() }) {
+                Button {
+                    dismiss()
+                } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(AppColor.mainColor)
                         Text("Geri")
-                            .foregroundColor(AppColor.mainColor)
                     }
+                    .foregroundColor(AppColor.mainColor)
                 }
             }
         }
@@ -61,206 +63,90 @@ struct SignUpView: View {
             Text(alertMessage)
         }
         .fullScreenCover(isPresented: $navigateToHome) {
-            HomeView()
+            HomeView(
+                    viewModel: HomeViewModel(
+                        repository: OneriAppRepository(),
+                        authService: FirebaseAuthService()
+                    )
+                )
         }
     }
 }
 
+// MARK: - Subviews
 private extension SignUpView {
+
     var headerSection: some View {
         VStack(spacing: 12) {
             Image(systemName: "person.circle.fill")
                 .font(.system(size: 80))
                 .foregroundColor(AppColor.mainColor)
-            
+
             Text("Hesap Oluştur")
                 .font(.largeTitle)
                 .bold()
-                .foregroundColor(.primary)
-            
+
             Text("Hemen ücretsiz hesap oluşturun")
                 .font(.subheadline)
                 .foregroundColor(.gray)
         }
         .padding(.bottom, 20)
     }
-    
+
     var registerForm: some View {
         VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Ad Soyad")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                HStack {
-                    Image(systemName: "person")
-                        .foregroundColor(.gray)
-                    TextField("Ad ve soyadınız", text: $fullName)
-                }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(12)
-                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("E-posta")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                HStack {
-                    Image(systemName: "envelope")
-                        .foregroundColor(.gray)
-                    TextField("ornek@email.com", text: $email)
-                        .foregroundColor(.gray)
-                        .textInputAutocapitalization(.never)
-                        .keyboardType(.emailAddress)
-                }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(12)
-                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Şifre")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                HStack {
-                    Image(systemName: "lock")
-                        .foregroundColor(.gray)
-                    
-                    if isPasswordVisible {
-                        TextField("En az 6 karakter", text: $password)
-                    } else {
-                        SecureField("En az 6 karakter", text: $password)
-                    }
-                    
-                    Button(action: {
-                        isPasswordVisible.toggle()
-                    }) {
-                        Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
-                            .foregroundColor(.gray)
-                    }
-                }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(12)
-                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Şifre Tekrar")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                HStack {
-                    Image(systemName: "lock.fill")
-                        .foregroundColor(.gray)
-                    
-                    if isConfirmPasswordVisible {
-                        TextField("Şifrenizi tekrar girin", text: $confirmPassword)
-                    } else {
-                        SecureField("Şifrenizi tekrar girin", text: $confirmPassword)
-                    }
-                    
-                    Button(action: {
-                        isConfirmPasswordVisible.toggle()
-                    }) {
-                        Image(systemName: isConfirmPasswordVisible ? "eye.slash" : "eye")
-                            .foregroundColor(.gray)
-                    }
-                }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(12)
-                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
-            }
+
+            inputField(
+                title: "Ad Soyad",
+                systemImage: "person",
+                text: $fullName,
+                placeholder: "Ad ve soyadınız"
+            )
+
+            inputField(
+                title: "E-posta",
+                systemImage: "envelope",
+                text: $email,
+                placeholder: "ornek@email.com",
+                keyboardType: .emailAddress
+            )
+
+            passwordField(
+                title: "Şifre",
+                text: $password,
+                isVisible: $isPasswordVisible,
+                placeholder: "En az 6 karakter"
+            )
+
+            passwordField(
+                title: "Şifre Tekrar",
+                text: $confirmPassword,
+                isVisible: $isConfirmPasswordVisible,
+                placeholder: "Şifrenizi tekrar girin"
+            )
         }
     }
-    
+
     var termsSection: some View {
         HStack(alignment: .top, spacing: 8) {
-            Button(action: {
+            Button {
                 agreeToTerms.toggle()
-            }) {
+            } label: {
                 Image(systemName: agreeToTerms ? "checkmark.square.fill" : "square")
                     .foregroundColor(agreeToTerms ? AppColor.mainColor : .gray)
                     .font(.title3)
             }
-            
+
             Text("Kullanım koşullarını ve gizlilik politikasını okudum, kabul ediyorum.")
                 .font(.caption)
                 .foregroundColor(.gray)
-                .fixedSize(horizontal: false, vertical: true)
         }
     }
-    
+
     var registerButton: some View {
-        Button(action: {
-            // Validasyon kontrolleri
-            guard !fullName.isEmpty else {
-                alertMessage = "Lütfen ad ve soyadınızı girin"
-                showAlert = true
-                return
-            }
-            
-            guard !email.isEmpty else {
-                alertMessage = "Lütfen e-posta adresinizi girin"
-                showAlert = true
-                return
-            }
-            
-            guard password.count >= 6 else {
-                alertMessage = "Şifre en az 6 karakter olmalıdır"
-                showAlert = true
-                return
-            }
-            
-            guard password == confirmPassword else {
-                alertMessage = "Şifreler eşleşmiyor"
-                showAlert = true
-                return
-            }
-            
-            Task {
-                let firebaseUser = await viewModel.signUp(email: email, password: password)
-                
-                if let firebaseUser = firebaseUser {
-                    print("Firebase Auth user created: \(firebaseUser.uid)")
-                    
-                    let nameParts = fullName.split(separator: " ", maxSplits: 1)
-                    let firstName = nameParts.first.map(String.init) ?? ""
-                    let lastName = nameParts.count > 1 ? String(nameParts[1]) : ""
-                    
-                    let user = User(
-                        id: firebaseUser.uid,
-                        firstName: firstName,
-                        lastName: lastName,
-                        email: email,
-                        comments: [],
-                        plannedPlaces: [],
-                        historySearch: []
-                    )
-                    
-                    let saveSuccess = await viewModel.saveUserToFirestore(user: user)
-                    
-                    if saveSuccess {
-                        print("User saved to Firestore")
-                        navigateToHome = true
-                    } else {
-                        alertMessage = viewModel.errorMessage ?? "Kullanıcı kaydedilemedi"
-                        showAlert = true
-                        print("Failed to save user: \(viewModel.errorMessage ?? "Unknown error")")
-                    }
-                } else {
-                    alertMessage = viewModel.errorMessage ?? "Kayıt başarısız"
-                    showAlert = true
-                    print("Sign up failed: \(viewModel.errorMessage ?? "Unknown error")")
-                }
-            }
-        }) {
+        Button {
+            signUp()
+        } label: {
             if viewModel.isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
@@ -271,25 +157,149 @@ private extension SignUpView {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(agreeToTerms ? AppColor.mainColor : Color.gray)
+                    .background(agreeToTerms ? AppColor.mainColor : .gray)
                     .cornerRadius(12)
-                    .shadow(color: agreeToTerms ? AppColor.mainColor.opacity(0.3) : Color.clear, radius: 8, x: 0, y: 4)
             }
         }
         .disabled(!agreeToTerms || viewModel.isLoading)
     }
-    
+
     var loginLink: some View {
         HStack {
             Text("Zaten hesabınız var mı?")
                 .foregroundColor(.gray)
-            Button(action: { dismiss() }) {
-                Text("Giriş Yap")
-                    .foregroundColor(AppColor.mainColor)
-                    .bold()
+            Button("Giriş Yap") {
+                dismiss()
             }
+            .foregroundColor(AppColor.mainColor)
+            .bold()
         }
         .font(.subheadline)
+    }
+}
+
+// MARK: - Actions
+private extension SignUpView {
+
+    func signUp() {
+        guard !fullName.isEmpty else {
+            showError("Lütfen ad ve soyadınızı girin")
+            return
+        }
+
+        guard !email.isEmpty else {
+            showError("Lütfen e-posta adresinizi girin")
+            return
+        }
+
+        guard password.count >= 6 else {
+            showError("Şifre en az 6 karakter olmalıdır")
+            return
+        }
+
+        guard password == confirmPassword else {
+            showError("Şifreler eşleşmiyor")
+            return
+        }
+
+        Task {
+            let authUser = await viewModel.signUp(email: email, password: password)
+
+            guard let authUser else {
+                showError(viewModel.errorMessage ?? "Kayıt başarısız")
+                return
+            }
+
+            let parts = fullName.split(separator: " ", maxSplits: 1)
+            let firstName = parts.first.map(String.init) ?? ""
+            let lastName = parts.count > 1 ? String(parts[1]) : ""
+
+            let user = User(
+                id: authUser.uid,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                comments: [],
+                plannedPlaces: [],
+                historySearch: []
+            )
+
+            let success = await viewModel.saveUserToFirestore(user: user)
+
+            if success {
+                navigateToHome = true
+            } else {
+                showError(viewModel.errorMessage ?? "Kullanıcı kaydedilemedi")
+            }
+        }
+    }
+
+    func showError(_ message: String) {
+        alertMessage = message
+        showAlert = true
+    }
+}
+
+// MARK: - Reusable Components
+private extension SignUpView {
+
+    func inputField(
+        title: String,
+        systemImage: String,
+        text: Binding<String>,
+        placeholder: String,
+        keyboardType: UIKeyboardType = .default
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.gray)
+
+            HStack {
+                Image(systemName: systemImage)
+                    .foregroundColor(.gray)
+                TextField(placeholder, text: text)
+                    .keyboardType(keyboardType)
+                    .textInputAutocapitalization(.never)
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(12)
+        }
+    }
+
+    func passwordField(
+        title: String,
+        text: Binding<String>,
+        isVisible: Binding<Bool>,
+        placeholder: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.gray)
+
+            HStack {
+                Image(systemName: "lock")
+                    .foregroundColor(.gray)
+
+                if isVisible.wrappedValue {
+                    TextField(placeholder, text: text)
+                } else {
+                    SecureField(placeholder, text: text)
+                }
+
+                Button {
+                    isVisible.wrappedValue.toggle()
+                } label: {
+                    Image(systemName: isVisible.wrappedValue ? "eye.slash" : "eye")
+                        .foregroundColor(.gray)
+                }
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(12)
+        }
     }
 }
 

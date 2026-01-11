@@ -8,11 +8,18 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    @StateObject private var viewModel: HomeViewModel
+
+        init(viewModel: HomeViewModel) {
+            _viewModel = StateObject(wrappedValue: viewModel)
+        }
+    
+    
     let categories: [String] = [
         "Tümü", "Restoran", "Kafe", "Bar", "Fast Food", "Pastane", "Kahvaltı", "Deniz Ürünleri", "Et Lokantası", "Vejetaryen"
     ]
     
-    @StateObject var viewModel = HomeViewModel()
     @State private var selectedCategory: String = "Tümü"
     
     var body: some View {
@@ -257,5 +264,11 @@ private extension HomeView {
 }
 
 #Preview {
-    HomeView()
+    HomeView(
+        viewModel: HomeViewModel(
+            repository: MockRepositorySuccess(),
+            authService: MockAuthService()
+        )
+    )
 }
+

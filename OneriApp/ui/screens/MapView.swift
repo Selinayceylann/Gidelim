@@ -230,10 +230,11 @@ private extension MapView {
             sportsBroadcast: false,
             hasAirConditioning: false,
             wheelchairAccessible: false,
-            menu: [],
             latitude: 41.0605,
             longitude: 28.9872,
-            features: []
+            features: [],
+            menu: []
+            
         )
     }
 }

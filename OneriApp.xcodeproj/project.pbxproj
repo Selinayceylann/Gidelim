@@ -14,11 +14,27 @@
 		87E5FFE92EB6204600DAC87A /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 87E5FFE82EB6204600DAC87A /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		87ACF0E82F04EFA40009A788 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 87C135A32E9AD4D80033BF84 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 87C135AA2E9AD4D80033BF84;
+			remoteInfo = OneriApp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		87ACF0E42F04EFA40009A788 /* OneriAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OneriAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		87C135AB2E9AD4D80033BF84 /* OneriApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneriApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		87ACF0E52F04EFA40009A788 /* OneriAppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = OneriAppTests;
+			sourceTree = "<group>";
+		};
 		87C135AD2E9AD4D80033BF84 /* OneriApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = OneriApp;
@@ -27,6 +43,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		87ACF0E12F04EFA40009A788 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		87C135A82E9AD4D80033BF84 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				87C135AD2E9AD4D80033BF84 /* OneriApp */,
+				87ACF0E52F04EFA40009A788 /* OneriAppTests */,
 				87C135AC2E9AD4D80033BF84 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				87C135AB2E9AD4D80033BF84 /* OneriApp.app */,
+				87ACF0E42F04EFA40009A788 /* OneriAppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,6 +86,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		87ACF0E32F04EFA40009A788 /* OneriAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 87ACF0EC2F04EFA40009A788 /* Build configuration list for PBXNativeTarget "OneriAppTests" */;
+			buildPhases = (
+				87ACF0E02F04EFA40009A788 /* Sources */,
+				87ACF0E12F04EFA40009A788 /* Frameworks */,
+				87ACF0E22F04EFA40009A788 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				87ACF0E92F04EFA40009A788 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				87ACF0E52F04EFA40009A788 /* OneriAppTests */,
+			);
+			name = OneriAppTests;
+			packageProductDependencies = (
+			);
+			productName = OneriAppTests;
+			productReference = 87ACF0E42F04EFA40009A788 /* OneriAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		87C135AA2E9AD4D80033BF84 /* OneriApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 87C135B92E9AD4D90033BF84 /* Build configuration list for PBXNativeTarget "OneriApp" */;
@@ -98,6 +146,10 @@
 				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
+					87ACF0E32F04EFA40009A788 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = 87C135AA2E9AD4D80033BF84;
+					};
 					87C135AA2E9AD4D80033BF84 = {
 						CreatedOnToolsVersion = 16.1;
 					};
@@ -121,11 +173,19 @@
 			projectRoot = "";
 			targets = (
 				87C135AA2E9AD4D80033BF84 /* OneriApp */,
+				87ACF0E32F04EFA40009A788 /* OneriAppTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		87ACF0E22F04EFA40009A788 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		87C135A92E9AD4D80033BF84 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -136,6 +196,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		87ACF0E02F04EFA40009A788 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		87C135A72E9AD4D80033BF84 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -145,7 +212,51 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		87ACF0E92F04EFA40009A788 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 87C135AA2E9AD4D80033BF84 /* OneriApp */;
+			targetProxy = 87ACF0E82F04EFA40009A788 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		87ACF0EA2F04EFA40009A788 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4K77DVXXUM;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SelinayCeylan.OneriAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OneriApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OneriApp";
+			};
+			name = Debug;
+		};
+		87ACF0EB2F04EFA40009A788 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4K77DVXXUM;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SelinayCeylan.OneriAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OneriApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OneriApp";
+			};
+			name = Release;
+		};
 		87C135B72E9AD4D90033BF84 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -326,6 +437,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		87ACF0EC2F04EFA40009A788 /* Build configuration list for PBXNativeTarget "OneriAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				87ACF0EA2F04EFA40009A788 /* Debug */,
+				87ACF0EB2F04EFA40009A788 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		87C135A62E9AD4D80033BF84 /* Build configuration list for PBXProject "OneriApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -10,8 +10,16 @@ import FirebaseAuth
 
 @MainActor
 class HomeViewModel: ObservableObject {
-    private let service = FirebaseAuthService()
-    private let repository = OneriAppRepository()
+    private let authService: FirebaseAuthServiceProtocol
+    private let repository: OneriAppRepositoryProtocol
+    
+    init(
+            repository: OneriAppRepositoryProtocol,
+            authService: FirebaseAuthServiceProtocol
+        ) {
+            self.repository = repository
+            self.authService = authService
+        }
     
     @Published var currentUser: User? = nil
     @Published var isLoggedIn: Bool = false
@@ -55,25 +63,23 @@ class HomeViewModel: ObservableObject {
     }
 
     func getCurrentUser() async {
-        if let firebaseUser = Auth.auth().currentUser {
-            print("Loading user: \(firebaseUser.uid)")
-            do {
-                let userData = try await repository.loadUser(userId: firebaseUser.uid)
-                self.currentUser = userData
-                self.isLoggedIn = true
-                print("User loaded successfully. Planned places: \(userData.plannedPlaces?.count ?? 0)")
-            } catch {
-                self.currentUser = nil
-                self.isLoggedIn = false
-                self.errorMessage = "Kullanıcı yüklenemedi: \(error.localizedDescription)"
-                print("Error loading user: \(error)")
-            }
-        } else {
+        guard let firebaseUser = authService.getCurrentUser() else {
             self.currentUser = nil
             self.isLoggedIn = false
-            print("No Firebase user found")
+            return
+        }
+
+        do {
+            let userData = try await repository.loadUser(userId: firebaseUser.uid)
+            self.currentUser = userData
+            self.isLoggedIn = true
+        } catch {
+            self.currentUser = nil
+            self.isLoggedIn = false
+            self.errorMessage = "Kullanıcı yüklenemedi: \(error.localizedDescription)"
         }
     }
+
 
     func refreshUser() async {
         print("Refreshing user...")
@@ -82,18 +88,17 @@ class HomeViewModel: ObservableObject {
     
     func loadRestaurants() async {
         isLoading = true
-        errorMessage = nil
-        
+        defer { isLoading = false }
+
         do {
-            let fetchedRestaurants = try await repository.loadRestaurants()
-            self.restaurants = fetchedRestaurants
+            let result = try await repository.loadRestaurants()
+            restaurants = result
         } catch {
-            self.errorMessage = "Restoranlar yüklenemedi: \(error.localizedDescription)"
-            print("Error loading restaurants: \(error)")
+            restaurants = []
+            errorMessage = error.localizedDescription
         }
-        
-        isLoading = false
     }
+
     
     func filterRestaurants(by district: String) -> [Restaurant] {
         if district == "Tümü" {

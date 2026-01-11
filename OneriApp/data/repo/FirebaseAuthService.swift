@@ -2,53 +2,39 @@
 //  FirebaseAuthService.swift
 //  OneriApp
 //
-//  Created by selinay ceylan on 1.11.2025.
+//  Created by selinay ceylan on 31.12.2025.
 //
 
-import Foundation
 import FirebaseAuth
 
-class FirebaseAuthService {
+final class FirebaseAuthService: FirebaseAuthServiceProtocol {
 
-    func signUp(email: String, password: String) async throws -> FirebaseAuth.User {
-        return try await withCheckedThrowingContinuation { continuation in
-            Auth.auth().createUser(withEmail: email, password: password) { result, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                
-                guard let user = result?.user else {
-                    continuation.resume(throwing: URLError(.badServerResponse))
-                    return
-                }
-                continuation.resume(returning: user)
-            }
-        }
+    func signUp(email: String, password: String) async throws -> AuthUser {
+        let result = try await Auth.auth()
+            .createUser(withEmail: email, password: password)
+
+        return AuthUser(
+            uid: result.user.uid,
+            email: result.user.email
+        )
     }
-    
-    func signIn(email: String, password: String) async throws -> FirebaseAuth.User {
-        return try await withCheckedThrowingContinuation { continuation in
-            Auth.auth().signIn(withEmail: email, password: password) { result, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                
-                guard let user = result?.user else {
-                    continuation.resume(throwing: URLError(.badServerResponse))
-                    return
-                }
-                continuation.resume(returning: user)
-            }
-        }
+
+    func signIn(email: String, password: String) async throws -> AuthUser {
+        let result = try await Auth.auth()
+            .signIn(withEmail: email, password: password)
+
+        return AuthUser(
+            uid: result.user.uid,
+            email: result.user.email
+        )
     }
-    
-    func signOut() async throws {
+
+    func signOut() throws {
         try Auth.auth().signOut()
     }
-    
-    func getCurrentUser() -> FirebaseAuth.User? {
-        return Auth.auth().currentUser
+
+    func getCurrentUser() -> AuthUser? {
+        guard let user = Auth.auth().currentUser else { return nil }
+        return AuthUser(uid: user.uid, email: user.email)
     }
 }

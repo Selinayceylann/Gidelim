@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-class OneriAppRepository {
+class OneriAppRepository : OneriAppRepositoryProtocol {
     private let db = Firestore.firestore()
     
     
@@ -119,6 +119,16 @@ class OneriAppRepository {
             "id": user.id ?? "", "firstName": user.firstName ?? "", "lastName": user.lastName ?? "", "email": user.email, "comments": [], "plannedPlaces": [], "historySearch": []
         ])
     }
+    func saveUser(_ user: User) async -> Bool {
+            do {
+                // Firestore kayıt işlemi
+                try await saveUserToFirestore(user: user)
+                return true
+            } catch {
+                print(error.localizedDescription)
+                return false
+            }
+        }
     
     func search(searchText: String) async throws -> [Restaurant] {
         let allRestaurants = try await loadRestaurants()
@@ -139,56 +149,7 @@ class OneriAppRepository {
 
     func loadRestaurants() async throws -> [Restaurant] {
         let snapshot = try await db.collection("restaurants").getDocuments()
-        var restaurants: [Restaurant] = []
-        
-        for document in snapshot.documents {
-            let data = document.data()
-            var reviews: [Review] = []
-            if let reviewsArray = data["reviews"] as? [[String: Any]] {
-                for reviewData in reviewsArray {
-                    let review = Review(
-                        id: UUID().uuidString,
-                        userName: reviewData["userName"] as? String ?? "",
-                        comment: reviewData["comment"] as? String ?? "",
-                        rating: reviewData["rating"] as? Double ?? 0.0,
-                        date: (reviewData["date"] as? Timestamp)?.dateValue() ?? Date()
-                    )
-                    reviews.append(review)
-                }
-            }
-            
-            let restaurant = Restaurant(
-                id: document.documentID,
-                name: data["name"] as? String ?? "",
-                district: data["district"] as? String ?? "",
-                fullAddress: data["fullAddress"] as? String ?? "",
-                phoneNumber: data["phoneNumber"] as? String ?? "",
-                openingHours: data["openingHours"] as? String ?? "",
-                description: data["description"] as? String ?? "",
-                imageURL: data["imageURL"] as? String ?? "",
-                category: data["category"] as? String ?? "",
-                rating: data["rating"] as? Double ?? 0.0,
-                reviews: reviews,
-                popularityScore: data["popularityScore"] as? Int ?? 0,
-                hasWifi: data["hasWifi"] as? Bool ?? false,
-                acceptsCreditCard: data["acceptsCreditCard"] as? Bool ?? false,
-                hasValetParking: data["hasValetParking"] as? Bool ?? false,
-                hasKidsMenu: data["hasKidsMenu"] as? Bool ?? false,
-                smokingAllowed: data["smokingAllowed"] as? Bool ?? false,
-                petFriendly: data["petFriendly"] as? Bool ?? false,
-                liveMusic: data["liveMusic"] as? Bool ?? false,
-                sportsBroadcast: data["sportsBroadcast"] as? Bool ?? false,
-                hasAirConditioning: data["hasAirConditioning"] as? Bool ?? false,
-                wheelchairAccessible: data["wheelchairAccessible"] as? Bool ?? false,
-                menu: [],
-                latitude: data["latitude"] as? Double ?? 0.0,
-                longitude: data["longitude"] as? Double ?? 0.0,
-                features: data["features"] as? [String] ?? [""]
-            )
-            
-            restaurants.append(restaurant)
-        }
-        
-        return restaurants
+        return snapshot.documents.map { Restaurant(data: $0.data(), id: $0.documentID) }
     }
+
 }
