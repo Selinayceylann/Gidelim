@@ -14,7 +14,7 @@ struct OneriAppApp: App {
     
     @StateObject private var container = AppContainer(
             repository: OneriAppRepository(),
-            authService: FirebaseAuthService()
+            authService: AuthService()
         )
 
     init() {
@@ -33,7 +33,7 @@ struct OneriAppApp: App {
             HomeView(
                     viewModel: HomeViewModel(
                         repository: OneriAppRepository(),
-                        authService: FirebaseAuthService()
+                        authService: AuthService()
                     )
                 )
         }

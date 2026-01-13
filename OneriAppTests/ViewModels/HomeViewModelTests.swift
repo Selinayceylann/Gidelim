@@ -14,12 +14,12 @@ final class HomeViewModelTests: XCTestCase {
 
     private var viewModel: HomeViewModel!
     private var repository: OneriAppRepositoryProtocol!
-    private var authService: MockAuthService!
+    private var authService: MockAuthServiceSuccess!
 
     override func setUp() {
         super.setUp()
         repository = MockRepositorySuccess()
-        authService = MockAuthService()
+        authService = MockAuthServiceSuccess()
         viewModel = HomeViewModel(
             repository: repository,
             authService: authService

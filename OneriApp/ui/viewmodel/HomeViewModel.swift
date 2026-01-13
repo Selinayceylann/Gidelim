@@ -10,12 +10,12 @@ import FirebaseAuth
 
 @MainActor
 class HomeViewModel: ObservableObject {
-    private let authService: FirebaseAuthServiceProtocol
+    private let authService: AuthServiceProtocol
     private let repository: OneriAppRepositoryProtocol
     
     init(
             repository: OneriAppRepositoryProtocol,
-            authService: FirebaseAuthServiceProtocol
+            authService: AuthServiceProtocol
         ) {
             self.repository = repository
             self.authService = authService

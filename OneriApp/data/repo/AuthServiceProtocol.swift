@@ -7,7 +7,7 @@
 
 import FirebaseAuth
 
-protocol FirebaseAuthServiceProtocol {
+protocol AuthServiceProtocol {
     func signUp(email: String, password: String) async throws -> AuthUser
     func signIn(email: String, password: String) async throws -> AuthUser
     func signOut() async throws

@@ -13,12 +13,12 @@ final class RestaurantDetailViewModelTests: XCTestCase {
 
     private var viewModel: RestaurantDetailViewModel!
     private var repository: OneriAppRepositoryProtocol!
-    private var authService: MockAuthService!
+    private var authService: MockAuthServiceSuccess!
 
     override func setUp() {
         super.setUp()
         repository = MockRepositorySuccess()
-        authService = MockAuthService()
+        authService = MockAuthServiceSuccess()
         viewModel = RestaurantDetailViewModel(
             repository: repository,
             authService: authService 

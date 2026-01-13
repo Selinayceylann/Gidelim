@@ -12,7 +12,7 @@ struct AuthUser {
     let email: String?
 }
 
-final class FirebaseAuthService: FirebaseAuthServiceProtocol {
+final class AuthService: AuthServiceProtocol {
 
     func signUp(email: String, password: String) async throws -> AuthUser {
         let result = try await Auth.auth()

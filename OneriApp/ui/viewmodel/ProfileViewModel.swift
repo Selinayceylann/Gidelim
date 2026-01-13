@@ -12,7 +12,7 @@ class ProfileViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    private let authRepository = FirebaseAuthService()
+    private let authRepository = AuthService()
     private let repository = OneriAppRepository()
     
     func loadCurrentUser() async {

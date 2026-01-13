@@ -8,7 +8,7 @@
 import Foundation
 @testable import OneriApp
 
-final class MockAuthService: FirebaseAuthServiceProtocol {
+final class MockAuthServiceSuccess: AuthServiceProtocol {
 
     var currentUser: AuthUser?
 

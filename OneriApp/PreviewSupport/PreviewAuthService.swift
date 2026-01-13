@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class PreviewAuthService: FirebaseAuthServiceProtocol {
+final class PreviewAuthService: AuthServiceProtocol {
 
     func signUp(email: String, password: String) async throws -> AuthUser {
         AuthUser(uid: "preview-uid", email: email)

@@ -19,8 +19,13 @@ struct SignUpView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
 
-    @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = SignUpViewModel()
+    @Environment(\.dismiss) private var dismiss    
+    @StateObject private var viewModel: SignUpViewModel
+
+        init(viewModel: SignUpViewModel) {
+            _viewModel = StateObject(wrappedValue: viewModel)
+        }
+
 
     var body: some View {
         ZStack {
@@ -66,7 +71,7 @@ struct SignUpView: View {
             HomeView(
                     viewModel: HomeViewModel(
                         repository: OneriAppRepository(),
-                        authService: FirebaseAuthService()
+                        authService: AuthService()
                     )
                 )
         }
@@ -182,25 +187,15 @@ private extension SignUpView {
 private extension SignUpView {
 
     func signUp() {
-        guard !fullName.isEmpty else {
-            showError("Lütfen ad ve soyadınızı girin")
-            return
-        }
-
-        guard !email.isEmpty else {
-            showError("Lütfen e-posta adresinizi girin")
-            return
-        }
-
-        guard password.count >= 6 else {
-            showError("Şifre en az 6 karakter olmalıdır")
-            return
-        }
-
-        guard password == confirmPassword else {
-            showError("Şifreler eşleşmiyor")
-            return
-        }
+        if let error = viewModel.validate(
+                fullName: fullName,
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword
+            ) {
+                showError(error)
+                return
+            }
 
         Task {
             let authUser = await viewModel.signUp(email: email, password: password)
@@ -305,6 +300,8 @@ private extension SignUpView {
 
 #Preview {
     NavigationStack {
-        SignUpView()
+        SignUpView(
+            viewModel: SignUpViewModel()
+        )
     }
 }

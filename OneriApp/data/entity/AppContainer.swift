@@ -10,11 +10,11 @@ import Foundation
 @MainActor
 final class AppContainer: ObservableObject {
     let repository: OneriAppRepositoryProtocol
-    let authService: FirebaseAuthServiceProtocol
+    let authService: AuthServiceProtocol
 
     init(
         repository: OneriAppRepositoryProtocol,
-        authService: FirebaseAuthServiceProtocol
+        authService: AuthServiceProtocol
     ) {
         self.repository = repository
         self.authService = authService

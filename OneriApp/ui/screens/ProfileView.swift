@@ -32,7 +32,11 @@ struct ProfileView: View {
                 await viewModel.loadCurrentUser()
             }
             .fullScreenCover(isPresented: $navigateToSignIn) {
-                SignInView()
+                SignInView(
+                    viewModel: SignInViewModel(
+                        authService: AuthService()
+                    )
+                )
             }
             .alert("Hata", isPresented: $showError) {
                 Button("Tamam", role: .cancel) { }

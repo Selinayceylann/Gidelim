@@ -8,13 +8,18 @@
 import Foundation
 
 @MainActor
-class SignInViewModel: ObservableObject {
-    private let authRepository = FirebaseAuthService()
+final class SignInViewModel: ObservableObject {
+
+    private let authService: AuthServiceProtocol
     @Published var errorMessage: String?
-    
+
+    init(authService: AuthServiceProtocol) {
+        self.authService = authService
+    }
+
     func signIn(email: String, password: String) async -> Bool {
         do {
-           _ = try await authRepository.signIn(email: email, password: password)
+            _ = try await authService.signIn(email: email, password: password)
             return true
         } catch {
             errorMessage = error.localizedDescription

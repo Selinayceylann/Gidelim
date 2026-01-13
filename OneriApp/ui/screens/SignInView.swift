@@ -13,7 +13,12 @@ struct SignInView: View {
     @State private var password = ""
     @State private var isPasswordVisible = false
     @State private var navigateToHome = false
-    @StateObject private var viewModel = SignInViewModel()
+    @StateObject private var viewModel: SignInViewModel
+
+    init(viewModel: SignInViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+
 
     var body: some View {
         NavigationStack {
@@ -42,7 +47,7 @@ struct SignInView: View {
                 HomeView(
                         viewModel: HomeViewModel(
                             repository: OneriAppRepository(),
-                            authService: FirebaseAuthService()
+                            authService: AuthService()
                         )
                     )
             }
@@ -213,7 +218,11 @@ private extension SignInView {
         HStack {
             Text("Hesabınız yok mu?")
                 .foregroundColor(.gray)
-            NavigationLink(destination: SignUpView()) {
+            NavigationLink(
+                destination: SignUpView(
+                    viewModel: SignUpViewModel()
+                )
+            ) {
                 Text("Kayıt Ol")
                     .foregroundColor(AppColor.mainColor)
                     .bold()
@@ -229,5 +238,9 @@ extension String: Identifiable {
 
 
 #Preview {
-    SignInView()
+    SignInView(
+        viewModel: SignInViewModel(
+            authService: AuthService()
+        )
+    )
 }

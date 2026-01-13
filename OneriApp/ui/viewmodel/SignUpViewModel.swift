@@ -10,14 +10,14 @@ import Foundation
 @MainActor
 final class SignUpViewModel: ObservableObject {
 
-    private let authRepository: FirebaseAuthServiceProtocol
+    private let authRepository: AuthServiceProtocol
     private let repository: OneriAppRepositoryProtocol
 
     @Published var isLoading = false
     @Published var errorMessage: String?
 
     init(
-        authRepository: FirebaseAuthServiceProtocol = FirebaseAuthService(),
+        authRepository: AuthServiceProtocol = AuthService(),
         repository: OneriAppRepositoryProtocol = OneriAppRepository()
     ) {
         self.authRepository = authRepository
@@ -42,4 +42,31 @@ final class SignUpViewModel: ObservableObject {
     func saveUserToFirestore(user: User) async -> Bool {
         await repository.saveUser(user)
     }
+    
+    func validate(
+        fullName: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ) -> String? {
+
+        if fullName.isEmpty {
+            return "Lütfen ad ve soyadınızı girin"
+        }
+
+        if email.isEmpty {
+            return "Lütfen e-posta adresinizi girin"
+        }
+
+        if password.count < 6 {
+            return "Şifre en az 6 karakter olmalıdır"
+        }
+
+        if password != confirmPassword {
+            return "Şifreler eşleşmiyor"
+        }
+
+        return nil
+    }
+
 }

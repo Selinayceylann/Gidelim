@@ -13,7 +13,7 @@ final class RestaurantDetailViewModel: ObservableObject {
 
     // MARK: - Dependencies
     private let repository: OneriAppRepositoryProtocol
-    private let authService: FirebaseAuthServiceProtocol
+    private let authService: AuthServiceProtocol
 
     // MARK: - Published State
     @Published private(set) var restaurants: [Restaurant] = []
@@ -24,7 +24,7 @@ final class RestaurantDetailViewModel: ObservableObject {
     // MARK: - Init
     init(
         repository: OneriAppRepositoryProtocol,
-        authService: FirebaseAuthServiceProtocol
+        authService: AuthServiceProtocol
     ) {
         self.repository = repository
         self.authService = authService

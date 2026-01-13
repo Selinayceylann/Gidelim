@@ -107,7 +107,11 @@ struct DistrictRestaurantCardView: View {
         .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
         .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
         .fullScreenCover(isPresented: $showSignInView) {
-            SignInView()
+            SignInView(
+                viewModel: SignInViewModel(
+                    authService: AuthService()
+                )
+            )
                 .ignoresSafeArea()
         }
         .onAppear {
