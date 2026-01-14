@@ -14,9 +14,19 @@ struct MapView: View {
         span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
     )
     
-    @EnvironmentObject var container: AppContainer
-    @StateObject private var viewModel = MapViewModel()
     @State private var showNearbySheet = false
+    @EnvironmentObject var container: AppContainer
+    @StateObject private var viewModel: MapViewModel
+
+    init() {
+        _viewModel = StateObject(
+            wrappedValue: MapViewModel(
+                repository: OneriAppRepository()
+            )
+        )
+    }
+
+
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -35,21 +45,21 @@ struct MapView: View {
     }
 }
 
-// MARK: - Computed Properties
 private extension MapView {
+
     var nearbyRestaurants: [Restaurant] {
         let userLocation = CLLocation(latitude: 41.0605, longitude: 28.9872)
-        return viewModel.restaurants.filter { restaurant in
-            guard let lat = restaurant.latitude, let lon = restaurant.longitude else { return false }
-            let restaurantLocation = CLLocation(latitude: lat, longitude: lon)
-            return userLocation.distance(from: restaurantLocation) <= 1000
-        }
-    }
-    
-    var allLocations: [Restaurant] {
-        return viewModel.restaurants + [userLocationItem()]
+        return viewModel.nearbyRestaurants(userLocation: userLocation)
     }
 }
+
+private extension MapView {
+
+    var allLocations: [Restaurant] {
+        viewModel.restaurants + [userLocationItem()]
+    }
+}
+
 
 // MARK: - Map Section
 private extension MapView {
