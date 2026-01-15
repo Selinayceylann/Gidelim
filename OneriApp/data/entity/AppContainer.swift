@@ -37,4 +37,8 @@ extension AppContainer {
             authService: authService
         )
     }
+    
+    func makeSearchViewModel() -> SearchViewModel {
+            SearchViewModel(repository: repository)
+        }
 }

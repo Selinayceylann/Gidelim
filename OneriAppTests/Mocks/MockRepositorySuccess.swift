@@ -31,4 +31,17 @@ final class MockRepositorySuccess: OneriAppRepositoryProtocol {
     func togglePlannedPlace(userId: String, restaurantId: String) async throws {
         // success
     }
+    
+    func search(searchText: String) async throws -> [Restaurant] {
+            return [
+                Restaurant(
+                    id: "1",
+                    name: "Test Mekan",
+                    district: "Kadıköy",
+                    category: "Kafe",
+                    rating: 4.5,
+                    features: ["WiFi", "Ders Çalışma"]
+                )
+            ]
+    }
 }

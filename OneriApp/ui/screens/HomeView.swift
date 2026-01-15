@@ -69,8 +69,9 @@ private extension HomeView {
     
     var searchTab: some View {
         NavigationStack {
-            SearchView()
+            SearchView(container: container)
         }
+        .environmentObject(container)
         .tabItem {
             Label("Arama", systemImage: "magnifyingglass")
         }

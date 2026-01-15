@@ -24,4 +24,8 @@ final class MockRepositoryFailure: OneriAppRepositoryProtocol {
     func saveUser(_ user: User) async -> Bool {
         return false
     }
+    
+    func search(searchText: String) async throws -> [Restaurant] {
+            throw URLError(.badServerResponse)
+    }
 }

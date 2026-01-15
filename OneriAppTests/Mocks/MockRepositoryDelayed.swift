@@ -9,6 +9,11 @@ import Foundation
 @testable import OneriApp
 
 final class MockRepositoryDelayed: OneriAppRepositoryProtocol {
+    func search(searchText: String) async throws -> [Restaurant] {
+            try await Task.sleep(nanoseconds: 300_000_000) // 0.3 sn gecikme
+            return []
+        }
+    
     func loadRestaurants() async throws -> [Restaurant] {
         try await Task.sleep(nanoseconds: 300_000_000)
         return []

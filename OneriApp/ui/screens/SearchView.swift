@@ -8,15 +8,24 @@
 import SwiftUI
 
 struct SearchView: View {
-    @ObservedObject var viewModel = SearchViewModel()
+    @EnvironmentObject private var container: AppContainer
+    @StateObject private var viewModel: SearchViewModel
+
     @State private var searchText = ""
     @FocusState private var isSearchFieldFocused: Bool
     @State private var showFilterSheet = false
-    @EnvironmentObject private var container: AppContainer
-    
+
     @State private var selectedDistrict: String = "Tümü"
     @State private var selectedCategory: String = "Tümü"
     @State private var selectedFeatures: Set<String> = []
+    
+        
+    init(container: AppContainer) {
+        _viewModel = StateObject(
+            wrappedValue: container.makeSearchViewModel()
+        )
+    }
+
     
     private let popularSearches = [
         ("Ders Çalışma", "Ders Çalışma"),
@@ -118,6 +127,7 @@ struct SearchView: View {
             await viewModel.search(searchText: searchText.isEmpty ? "" : searchText)
         }
     }
+    
 }
 
 private extension SearchView {
@@ -729,5 +739,12 @@ struct FlowLayout: Layout {
 }
 
 #Preview {
-    SearchView()
+    let container = AppContainer(
+        repository: PreviewRepository(),
+        authService: PreviewAuthService()
+    )
+
+    SearchView(container: container)
+        .environmentObject(container)
 }
+

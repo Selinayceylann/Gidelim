@@ -13,4 +13,6 @@ protocol OneriAppRepositoryProtocol {
     func loadRestaurants() async throws -> [Restaurant]
     func togglePlannedPlace(userId: String, restaurantId: String) async throws
      func saveUser(_ user: User) async -> Bool
+    func search(searchText: String) async throws -> [Restaurant]
+
 }

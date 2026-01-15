@@ -9,10 +9,14 @@ import Foundation
 
 @MainActor
 class SearchViewModel: ObservableObject {
-    private let repository = OneriAppRepository()
+    private let repository: OneriAppRepositoryProtocol
     
     @Published var searchResults: [Restaurant] = []
     @Published var isLoading = false
+    
+    init(repository: OneriAppRepositoryProtocol) {
+        self.repository = repository
+    }
     
     func search(searchText: String) async {
         isLoading = true
@@ -20,9 +24,7 @@ class SearchViewModel: ObservableObject {
             searchResults = try await repository.search(searchText: searchText)
         } catch {
             searchResults = []
-            print("Arama hatası: \(error)")
         }
         isLoading = false
     }
-    
 }
