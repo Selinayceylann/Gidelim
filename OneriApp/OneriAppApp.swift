@@ -13,9 +13,9 @@ struct OneriAppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     @StateObject private var container = AppContainer(
-            repository: OneriAppRepository(),
-            authService: AuthService()
-        )
+        repository: OneriAppRepository(),
+        authService: AuthService()
+    )
 
     init() {
         NavigationBarStyle.setupNavigationBar()
@@ -31,11 +31,9 @@ struct OneriAppApp: App {
     var body: some Scene {
         WindowGroup {
             HomeView(
-                    viewModel: HomeViewModel(
-                        repository: OneriAppRepository(),
-                        authService: AuthService()
-                    )
-                )
+                viewModel: container.makeHomeViewModel()
+            )
+            .environmentObject(container) 
         }
     }
 }

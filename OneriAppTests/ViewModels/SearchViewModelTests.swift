@@ -41,17 +41,20 @@ final class SearchViewModelTests: XCTestCase {
     
     func test_search_setsLoadingTrueWhileSearching() async {
         // GIVEN
-        let repository = MockRepositorySuccess()
+        let repository = MockRepositoryDelayed()
         let viewModel = SearchViewModel(repository: repository)
-        
+
         // WHEN
         let task = Task {
             await viewModel.search(searchText: "test")
         }
-        
+
+        // küçük bir yield → Task'in başlamasına izin ver
+        await Task.yield()
+
         // THEN
         XCTAssertTrue(viewModel.isLoading)
-        
+
         await task.value
         XCTAssertFalse(viewModel.isLoading)
     }
